@@ -63,7 +63,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "megafy_frontend")
+            os.path.join(BASE_DIR, "megafy_frontend/build")
         ],
         'APP_DIRS': True,
         'OPTIONS': {

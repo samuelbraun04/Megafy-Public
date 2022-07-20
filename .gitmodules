@@ -1,0 +1,3 @@
+[submodule "megafy-frontend"]
+	path = megafy-frontend
+	url = git@github.com:NoahdoRegoUO/megafy_front_end.git
