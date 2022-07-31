@@ -63,7 +63,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "megafy_frontend/build"),
+            os.path.join(BASE_DIR, "megafy-frontend/build"),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -131,3 +131,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Static files for React integration
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "megafy-frontend/build/static"),
+]
