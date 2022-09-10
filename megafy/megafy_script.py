@@ -17,6 +17,34 @@ def loadAudioFile(file_path, duration=None):
     return sig
 
 def loadPreset(presetOption):
+    '''
+    Loads a preset from a textfile.
+
+    Textfile syntax should be as follows:
+    
+        FIRST LINE:
+            Name: Pitch Shift
+            Value: False or any integer from -12 to 12
+        
+        SECOND LINE:
+            Name: Bass Boost
+            Value: False or list of four floats from 0.0 to 1.0
+        
+        THIRD LINE:
+            Name: Reverb
+            Value: False or list of four floats from 0.0 to 1.0
+        
+        FOURTH LINE:
+            Name: Soft Clipper
+            Value: False or list of five floats from 0.0 to 1.0
+        
+        EXAMPLE PRESET AS TEXTFILE:
+
+            False
+            0.0 1.0 1.0 1.0
+            False
+            0.1 0.1 0.1 0.1 0.2
+    '''
     presetInput = open(path.dirname(__file__)+'\Presets\\'+presetOption+'.txt').readlines()
 
     for counter in range(len(presetInput)):
