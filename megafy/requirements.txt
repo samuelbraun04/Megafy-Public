@@ -1,0 +1,4 @@
+dawdreamer==0.6.10
+librosa==0.9.1
+moviepy==1.0.3
+scipy==1.8.1
