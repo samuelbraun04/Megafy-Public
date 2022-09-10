@@ -8,7 +8,6 @@ VALID_FILETYPES = ['.mp3', '.wav'] #These are the only filetypes that I know wor
 SAMPLE_RATE = 44100 #Sample rate for all outputted files (very common)
 BUFFER_SIZE = 512 #Don't really know what it is but we need it
 
-
 def loadAudioFile(file_path, duration=None):
     '''
     Loads a .wav or .mp3 file and translates it into data that dawdreamer (the digital audio workspace we're using) can understand
@@ -17,6 +16,21 @@ def loadAudioFile(file_path, duration=None):
     assert(rate == SAMPLE_RATE)
     return sig
 
+def loadPreset(presetOption):
+    presetInput = open(path.dirname(__file__)+'\Presets\\'+presetOption+'.txt').readlines()
+
+    for counter in range(len(presetInput)):
+        presetInput[counter] = presetInput[counter].strip()
+
+        if presetInput[counter] == 'False':
+            presetInput[counter] = False
+        else:
+            presetInput[counter] = presetInput[counter].split(' ')
+
+            for number in range(len(presetInput[counter])):
+                presetInput[counter][number] = float(presetInput[counter][number])
+    
+    loadPreset(presetInput)
 
 def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_CHOICE=False, SOFT_CLIPPER_CHOICE=False):
     '''
@@ -29,7 +43,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
         RETURNS:
 
-            No returns. Just exports the final audio into a directory.
+            Returns True if everything works.
 
         PARAMETERS:
 
@@ -253,7 +267,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     write(path.dirname(__file__)+'\Output'+'\\'+str(file[file.rfind('\\')+1:]).upper()[:-4]+'.wav', SAMPLE_RATE, audio.transpose())
 
-    # return 
+    return True 
 
 #TESTING TESTING TESTING
 # megafyFile(r'C:\Users\samlb\Videos\4K Video Downloader\Giveon - Make You Mine (Lyrics).mp3', BASS_BOOST_CHOICE=[0.7,0.27,0.7, 0.5], SOFT_CLIPPER_CHOICE=[1.0, 0.5, 0.0, 0.0, 1.0])
