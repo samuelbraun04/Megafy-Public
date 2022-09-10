@@ -16,7 +16,7 @@ def loadAudioFile(file_path, duration=None):
     assert(rate == SAMPLE_RATE)
     return sig
 
-def loadPreset(presetOption):
+def loadPreset(file, presetOption):
     '''
     Loads a preset from a textfile.
 
@@ -58,7 +58,7 @@ def loadPreset(presetOption):
             for number in range(len(presetInput[counter])):
                 presetInput[counter][number] = float(presetInput[counter][number])
     
-    loadPreset(presetInput)
+    megafyFile(file, presetInput[0], presetInput[1], presetInput[2], presetInput[3])
 
 def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_CHOICE=False, SOFT_CLIPPER_CHOICE=False):
     '''
@@ -297,5 +297,6 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     return True 
 
-#TESTING TESTING TESTING
+# TESTING TESTING TESTING
+loadPreset(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Jay-Z & Kanye West - Niggas in Paris - Watch the Throne.mp3', 'Default')
 # megafyFile(r'C:\Users\samlb\Videos\4K Video Downloader\Giveon - Make You Mine (Lyrics).mp3', BASS_BOOST_CHOICE=[0.7,0.27,0.7, 0.5], SOFT_CLIPPER_CHOICE=[1.0, 0.5, 0.0, 0.0, 1.0])
