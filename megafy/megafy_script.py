@@ -8,6 +8,14 @@ VALID_FILETYPES = ['.mp3', '.wav'] #These are the only filetypes that I know wor
 SAMPLE_RATE = 44100 #Sample rate for all outputted files (very common)
 BUFFER_SIZE = 512 #Don't really know what it is but we need it
 
+def getConjoiner():
+    currentDir = path.dirname(__file__)
+    if '\\' in currentDir:
+        conjoiner = '\\'
+    elif '/' in currentDir:
+        conjoiner = '/'
+    return conjoiner
+
 def loadAudioFile(file_path, duration=None):
     '''
     Loads a .wav or .mp3 file and translates it into data that dawdreamer (the digital audio workspace we're using) can understand
@@ -45,7 +53,8 @@ def loadPreset(file, presetOption):
             False
             0.1 0.1 0.1 0.1 0.2
     '''
-    presetInput = open(path.dirname(__file__)+'\Presets\\'+presetOption+'.txt').readlines()
+    conjoiner = getConjoiner()
+    presetInput = open(path.dirname(__file__)+conjoiner+'Presets'+conjoiner+presetOption+'.txt').readlines()
 
     for counter in range(len(presetInput)):
         presetInput[counter] = presetInput[counter].strip()
@@ -57,14 +66,14 @@ def loadPreset(file, presetOption):
 
             for number in range(len(presetInput[counter])):
                 presetInput[counter][number] = float(presetInput[counter][number])
-    
+
     megafyFile(file, presetInput[0], presetInput[1], presetInput[2], presetInput[3])
 
 def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_CHOICE=False, SOFT_CLIPPER_CHOICE=False):
     '''
         DESCRIPTION:
 
-            Megafy's a given file using inputted parameters.
+            Megafies a given file using inputted parameters.
 
             NOTE (FOR EVERYTHING EXCEPT PITCH_SHIFT_CHOICE): All parameters work with values from 0.0 to 1.0. This means 0.5 could represent something very different depending on the context.
             NOTE (FOR PITCH_SHIFT_CHOICE): Audio shouldn't be shifted above +12 semitones and less than -12 semitones.
@@ -84,7 +93,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
                 PITCH_SHIFT_CHOICE should be an int representing the number of semitones they'd like to shift their audio.
                 
                 Examples:
-                    
+
                     If user would like to raise audio by 5 semitones, PITCH_SHIFT_CHOICE = 5
                     If user would like to lower audio by 7 semitones, PITCH_SHIFT_CHOICE = -7
             
@@ -210,6 +219,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
                         Recommended Value: For a good megafy effect, I'd suggest 1.0 (True)
 
     '''
+    conjoiner = getConjoiner()
 
     #What's running everything
     engine = daw.RenderEngine(SAMPLE_RATE, BUFFER_SIZE)
@@ -223,6 +233,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     #Set pitch shift and its parameters
     if PITCH_SHIFT_CHOICE != False:
+        PITCH_SHIFT_CHOICE = PITCH_SHIFT_CHOICE[0]
         tranposeValue = PITCH_SHIFT_CHOICE
         playback_processor = engine.make_playbackwarp_processor("my_playback", song)
         playback_processor.transpose = tranposeValue
@@ -241,7 +252,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     #Set bass booster and its parameters
     if BASS_BOOST_CHOICE != False:
-        bass_boost = engine.make_plugin_processor("my_bass_boost", path.dirname(__file__)+'\Plugins\BarkOfDog2.dll')
+        bass_boost = engine.make_plugin_processor("my_bass_boost", path.dirname(__file__)+conjoiner+'Plugins'+conjoiner+'BarkOfDog2.dll')
         bass_boost.set_parameter(2, BASS_BOOST_CHOICE[0]) #Output gain (dB)
         bass_boost.set_parameter(3, BASS_BOOST_CHOICE[1]) #Freq. (Hz)
         bass_boost.set_parameter(4, BASS_BOOST_CHOICE[2]) #Boost (dB)
@@ -250,7 +261,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     #Set reverb levels and its parameters
     if REVERB_CHOICE != False:           
-        reverb = engine.make_plugin_processor("my_reverb", path.dirname(__file__)+'\Plugins\MConvolutionEZ.dll')
+        reverb = engine.make_plugin_processor("my_reverb", path.dirname(__file__)+conjoiner+'Plugins'+conjoiner+'MConvolutionEZ.dll')
         reverb.set_parameter(0, REVERB_CHOICE[0]) #Reverb (0==Super Dry, 1==Super Wet)
         reverb.set_parameter(1, REVERB_CHOICE[1]) #Wide (0.333333==Off, 0==Mono, 1==200%)
         reverb.set_parameter(2, REVERB_CHOICE[2]) #High-pass (0==Off)
@@ -265,7 +276,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     #Set soft clipper and its parameters
     if SOFT_CLIPPER_CHOICE != False:
-        soft_clipper = engine.make_plugin_processor("my_soft_clipper", path.dirname(__file__)+'\Plugins\Initial Clipper.dll')
+        soft_clipper = engine.make_plugin_processor("my_soft_clipper", path.dirname(__file__)+conjoiner+'Plugins'+conjoiner+'Initial Clipper.dll')
         soft_clipper.set_parameter(0, SOFT_CLIPPER_CHOICE[0]) #Threshold
         soft_clipper.set_parameter(1, SOFT_CLIPPER_CHOICE[1]) #Input gain
         soft_clipper.set_parameter(2, SOFT_CLIPPER_CHOICE[2]) #Positive saturation
@@ -274,7 +285,9 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
         if len(OUR_GRAPH) == 3:
             OUR_GRAPH.append((soft_clipper, ["my_reverb"]))
-        elif len(OUR_GRAPH) == 2:
+        elif len(OUR_GRAPH) == 2 and reverbed == True:
+            OUR_GRAPH.append((soft_clipper, ["my_reverb"]))
+        elif len(OUR_GRAPH) == 2 and reverbed != True:
             OUR_GRAPH.append((soft_clipper, ["my_bass_boost"]))
         elif len(OUR_GRAPH) == 1:
             OUR_GRAPH.append((soft_clipper, ["my_playback"]))
@@ -293,10 +306,10 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
     #Extract audio from engine
     audio = engine.get_audio()
 
-    write(path.dirname(__file__)+'\Output'+'\\'+str(file[file.rfind('\\')+1:]).upper()[:-4]+'.wav', SAMPLE_RATE, audio.transpose())
+    write(path.dirname(__file__)+conjoiner+'Output'+conjoiner+str(file[file.rfind(conjoiner)+1:]).upper()[:-4]+'.wav', SAMPLE_RATE, audio.transpose())
 
     return True 
 
 # TESTING TESTING TESTING
-loadPreset(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Jay-Z & Kanye West - Niggas in Paris - Watch the Throne.mp3', 'Default')
-# megafyFile(r'C:\Users\samlb\Videos\4K Video Downloader\Giveon - Make You Mine (Lyrics).mp3', BASS_BOOST_CHOICE=[0.7,0.27,0.7, 0.5], SOFT_CLIPPER_CHOICE=[1.0, 0.5, 0.0, 0.0, 1.0])
+# loadPreset(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Sheck Wes - Mo Bamba (Official Music Video).mp3', 'Default - Copy')
+# megafyFile(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Glaive - 1984 (Directed by Cole Bennett).mp3', PITCH_SHIFT_CHOICE=[3], BASS_BOOST_CHOICE=[0.75,0.272, 0.8, 0.5], SOFT_CLIPPER_CHOICE=[1.0, 0.5, 0.0, 0.0, 1.0])
