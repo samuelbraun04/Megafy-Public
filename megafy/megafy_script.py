@@ -5,8 +5,8 @@ from scipy.io.wavfile import write
 import dawdreamer as daw
 
 VALID_FILETYPES = ['.mp3', '.wav'] #These are the only filetypes that I know work for sure
-SAMPLE_RATE = 44100 #Sample rate for all outputted files (very common)
-BUFFER_SIZE = 512 #Don't really know what it is but we need it
+SAMPLE_RATE = 44100
+BUFFER_SIZE = 512
 
 def getConjoiner():
     currentDir = path.dirname(__file__)
@@ -227,12 +227,14 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
     #Graph is the order in which we add different effects. Reverbed is just a status to see if the audio's been reverbed yet or not
     OUR_GRAPH = []
     reverbed = False
+    lowered = False
 
     #Turn song into understandable language
     song = loadAudioFile(file)
 
     #Set pitch shift and its parameters
     if PITCH_SHIFT_CHOICE != False:
+        lowered = True
         PITCH_SHIFT_CHOICE = PITCH_SHIFT_CHOICE[0]
         tranposeValue = PITCH_SHIFT_CHOICE
         playback_processor = engine.make_playbackwarp_processor("my_playback", song)
@@ -297,7 +299,7 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
 
     #Render clip
     durationOfClip = AudioFileClip(file)
-    if reverbed == True:
+    if lowered == True:
         durationOfClip = (durationOfClip.duration)*(2**(-tranposeValue/12))
     else:
         durationOfClip = durationOfClip.duration
@@ -311,5 +313,5 @@ def megafyFile(file, PITCH_SHIFT_CHOICE=False, BASS_BOOST_CHOICE=False, REVERB_C
     return True 
 
 # TESTING TESTING TESTING
-# loadPreset(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Sheck Wes - Mo Bamba (Official Music Video).mp3', 'Default - Copy')
+loadPreset(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Star Shopping.mp3', 'Default - Copy (2)')
 # megafyFile(r'C:\Users\samlb\Documents\DOWNLOAD_YOUTUBE\Output\Glaive - 1984 (Directed by Cole Bennett).mp3', PITCH_SHIFT_CHOICE=[3], BASS_BOOST_CHOICE=[0.75,0.272, 0.8, 0.5], SOFT_CLIPPER_CHOICE=[1.0, 0.5, 0.0, 0.0, 1.0])
